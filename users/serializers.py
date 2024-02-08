@@ -1,0 +1,120 @@
+from rest_framework import serializers
+
+from django.contrib.auth import get_user_model
+
+from testuni.settings import BASE_URL
+from users.models import Teacher, MyUser
+
+User = get_user_model()
+
+
+class RegistrationSerializer(serializers.ModelSerializer):
+    password2 = serializers.CharField(write_only=True)
+    email = serializers.EmailField()
+    profile_pic = serializers.ImageField(required=False)
+    bio = serializers.CharField(required=False, )
+    cv = serializers.FileField(required=False)
+
+    class Meta:
+        model = MyUser
+        fields = ['email', 'password', 'password2', 'first_name', 'last_name',
+                  'profile_pic', 'is_teacher',
+                  'bio', 'cv'
+                  ]
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
+
+    def to_representation(self, instance):
+        return get_profile(instance)
+
+    def validate(self, data):
+        password = data.get('password')
+        password2 = data.get('password2')
+        email = data.get('email')
+        errors = []
+
+        if password != password2:
+            errors.append('პაროლები არ ემთხვევა')
+        if len(password) < 8:
+            errors.append('პაროლი უნდა შედგებოდეს მინიმუმ 8 სიმბოლოსგან')
+        if User.objects.filter(email=email).exists():
+            errors.append('მომხმარებელი ამ იმეილით უკვე არსებობს')
+        if len(errors) > 0:
+            raise serializers.ValidationError({'errors': errors})
+        return data
+
+    def create(self, validated_data):
+        user = MyUser.objects.create_user(
+            email=validated_data.get('email'),
+            password=validated_data.get('password'),
+            first_name=validated_data.get('first_name'),
+            last_name=validated_data.get('last_name'),
+            is_teacher=validated_data.get('is_teacher', False),
+        )
+
+        if user.is_teacher:
+            Teacher.objects.create(
+                user=user,
+                bio=validated_data.get('bio'),
+                cv=validated_data.get('cv')
+            )
+        return user
+
+
+class MyUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MyUser
+        partial = True
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_teacher']
+
+
+class TeacherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Teacher
+        partial = True
+        fields = ['profile_pic', 'bio', 'cv', 'phone', 'average_teacher_score']
+
+    def get_profile_pic(self, obj):
+        if obj.profile_pic:
+            base_url = BASE_URL
+            return f"{base_url}{obj.profile_pic.url}"
+        return None
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    profile_pic = serializers.ImageField(required=False)
+    bio = serializers.CharField(required=False, )
+    cv = serializers.FileField(required=False)
+    phone = serializers.IntegerField()
+    average_teacher_score = serializers.DecimalField(read_only=True, max_digits=3, decimal_places=2)
+
+    class Meta:
+        model = MyUser
+        partial = True
+        fields = ['id', 'email', 'first_name', 'last_name',
+                  'profile_pic', 'is_teacher',
+                  'bio', 'cv', 'phone', 'average_teacher_score'
+                  ]
+
+        extra_kwargs = {
+            'id': {'read_only': True},
+        }
+
+    def to_representation(self, instance):
+        return get_profile(instance)
+
+    def update(self, instance, validated_data):
+        super().update(instance, validated_data)
+        teacher = Teacher.objects.get(user=instance)
+        t_serializer = TeacherSerializer()
+        t_serializer.update(teacher, validated_data)
+        return instance
+
+
+def get_profile(instance: MyUser):
+    representation = MyUserSerializer(instance).data
+    if representation['is_teacher']:
+        teacher_serializer = TeacherSerializer(Teacher.objects.get(user=instance))
+        representation.update(teacher_serializer.data)
+    return representation
