@@ -37,7 +37,7 @@ class LoginView(APIView):
     def post(self, request):
         global email
         try:
-            if 'email' not in request.data or 'password' not in request.data:
+            if not (request.data['email'] and request.data['password']):
                 return Response(
                     {'error': 'საჭირო ველები შესავსებია'},
                     status=status.HTTP_400_BAD_REQUEST
