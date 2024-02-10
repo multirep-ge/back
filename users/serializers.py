@@ -12,21 +12,22 @@ class RegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True)
     email = serializers.EmailField()
     profile_pic = serializers.ImageField(required=False)
+    phone = serializers.IntegerField(required=False)
     bio = serializers.CharField(required=False, )
     cv = serializers.FileField(required=False)
 
     class Meta:
         model = MyUser
         fields = ['email', 'password', 'password2', 'first_name', 'last_name',
-                  'profile_pic', 'is_teacher',
-                  'bio', 'cv'
+                  'is_teacher',
+                  'bio', 'cv', 'profile_pic', 'phone'
                   ]
         extra_kwargs = {
             'password': {'write_only': True}
         }
 
     def to_representation(self, instance):
-        return get_profile(instance)
+        return get_profile(instance,context=self.context)
 
     def validate(self, data):
         password = data.get('password')
@@ -57,7 +58,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
             Teacher.objects.create(
                 user=user,
                 bio=validated_data.get('bio'),
-                cv=validated_data.get('cv')
+                cv=validated_data.get('cv'),
+                profile_pic=validated_data.get('profile_pic'),
+                phone=validated_data.get('phone')
             )
         return user
 
@@ -70,6 +73,8 @@ class MyUserSerializer(serializers.ModelSerializer):
 
 
 class TeacherSerializer(serializers.ModelSerializer):
+    profile_pic = serializers.SerializerMethodField()
+
     class Meta:
         model = Teacher
         partial = True
@@ -77,8 +82,7 @@ class TeacherSerializer(serializers.ModelSerializer):
 
     def get_profile_pic(self, obj):
         if obj.profile_pic:
-            base_url = BASE_URL
-            return f"{base_url}{obj.profile_pic.url}"
+            return self.context.get('request').build_absolute_uri(obj.profile_pic.url)
         return None
 
 
@@ -102,7 +106,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         }
 
     def to_representation(self, instance):
-        return get_profile(instance)
+        return get_profile(instance,context=self.context)
 
     def update(self, instance, validated_data):
         super().update(instance, validated_data)
@@ -112,10 +116,10 @@ class ProfileSerializer(serializers.ModelSerializer):
         return instance
 
 
-def get_profile(instance: MyUser):
+def get_profile(instance: MyUser, context=None):
     representation = MyUserSerializer(instance).data
     if representation['is_teacher']:
-        teacher_serializer = TeacherSerializer(Teacher.objects.get(user=instance))
+        teacher_serializer = TeacherSerializer(Teacher.objects.get(user=instance), context=context)
         representation.update(teacher_serializer.data)
     return representation
 

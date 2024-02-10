@@ -14,24 +14,22 @@ class Me(APIView):
     def get(self, request):
         try:
             data = request.user
-            serializer = ProfileSerializer(data)
+            serializer = ProfileSerializer(data, context={'request': request})
             return Response({'data': serializer.data}, status=status.HTTP_200_OK)
         except:
             return Response({'error': 'გაუთვალისწინებელი ხარვეზი'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
 class check_user(APIView):
     def post(self, request):
-
         user = request.data.get('email')
-
 
         if not MyUser.objects.filter(email=user).exists():
             return Response(False)
 
         return Response(True)
+
 
 class ManageUsers(APIView):
     def get(self, request, pk=None):
@@ -48,7 +46,7 @@ class ManageUsers(APIView):
             paginator.page_size = 12
             queryset = MyUser.objects.all().order_by('id')
             paginated_data = paginator.paginate_queryset(queryset, request)
-            serializer = ProfileSerializer(paginated_data, many=True)
+            serializer = ProfileSerializer(paginated_data, many=True,context={'request': request})
 
             data = {
                 'count': paginator.page.paginator.count,
@@ -70,7 +68,7 @@ class ManageUsers(APIView):
             if instance != request.user:
                 return Response({'error': 'არ გაქვს მონაცემების შეცვლის უფლება'}, status.HTTP_403_FORBIDDEN)
 
-            serializer = ProfileSerializer(instance, data=request.data, partial=True)
+            serializer = ProfileSerializer(instance, data=request.data, partial=True,context={'request': request})
             if serializer.is_valid():
                 serializer.save()
                 return Response(
@@ -89,7 +87,7 @@ class TopTenTeacher(APIView):
     def get(self, request):
         try:
             data = MyUser.objects.filter(is_teacher=True)
-            serializer = ProfileSerializer(data, many=True)
+            serializer = ProfileSerializer(data, many=True,context={'request':request})
 
             top_ten = sorted(serializer.data, key=lambda x: x['average_teacher_score'], reverse=True)[:10]
 

@@ -21,7 +21,7 @@ class ListingView(APIView):
                 )
 
             listings = Listing.objects.order_by('-date_created')[:quantity]
-            listings = ListingSerializer(listings, many=True)
+            listings = ListingSerializer(listings, many=True, context={'request': request})
 
             return Response(
                 {'data': listings.data},
@@ -46,7 +46,7 @@ class Filter(APIView):
                 data.save()
             except:
                 return Response({'error': 'განცხადება ვერ მოიძებნა'}, status.HTTP_404_NOT_FOUND)
-            serializer = ListingSerializer(data)
+            serializer = ListingSerializer(data,context={'request':request})
             return Response({'data': serializer.data}, status=status.HTTP_200_OK)
 
         subject = self.request.query_params.get("subject")
@@ -69,7 +69,7 @@ class Filter(APIView):
             if district:
                 queryset = queryset.filter(district=district)
 
-        data = ListingSerializer(queryset, many=True).data
+        data = ListingSerializer(queryset, many=True,context={'request':request}).data
         if sort_by:
             data = list(sorted(data, key=lambda x: x[sort_by]))
         paginator = PageNumberPagination()

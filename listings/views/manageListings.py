@@ -7,7 +7,6 @@ from listings.models.listings import Listing
 from listings.serializers import ListingSerializer, EditListingSerializer
 
 
-
 class ManageListing(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -47,7 +46,8 @@ class ManageListing(APIView):
                 )
 
             listing_instance = Listing.objects.get(id=instance_id, teacher=user.id)
-            serializer = EditListingSerializer(listing_instance, data=request.data, partial=True)
+            serializer = EditListingSerializer(listing_instance, data=request.data, partial=True,
+                                               context={'request': request})
             if serializer.is_valid():
                 serializer.save()
                 return Response({'success': 'განცხადება წარმატებით განახლდა', 'data': serializer.data},
