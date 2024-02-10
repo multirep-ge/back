@@ -66,7 +66,7 @@ class MyUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyUser
         partial = True
-        fields = ['id', 'email', 'first_name', 'last_name', 'is_teacher']
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_teacher', 'is_email_confirmed']
 
 
 class TeacherSerializer(serializers.ModelSerializer):
@@ -118,3 +118,8 @@ def get_profile(instance: MyUser):
         teacher_serializer = TeacherSerializer(Teacher.objects.get(user=instance))
         representation.update(teacher_serializer.data)
     return representation
+
+
+class VerificationSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField()

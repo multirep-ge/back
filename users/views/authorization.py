@@ -2,8 +2,12 @@ from django.contrib.auth import authenticate, login, logout
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from users.serializers import RegistrationSerializer
+
+from users.models import MyUser
+from users.serializers import RegistrationSerializer, VerificationSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from users.utils import send_confirmation_email
 
 
 def get_tokens_for_user(user):
@@ -22,7 +26,7 @@ class RegistrationView(APIView):
 
         if serializer.is_valid():
             serializer.save()
-
+            send_confirmation_email(serializer.data['email'])
             return Response(
                 {
                     'message': 'მომხმარებელი წარმატებით დარეგისტრირდა',
@@ -73,3 +77,54 @@ class LogoutView(APIView):
             {'message': 'თქვენ წარმატებით გამოხვედით სისტემიდან'},
             status=status.HTTP_200_OK
         )
+
+
+class VerifyOTP(APIView):
+    def post(self, request):
+        try:
+            data = request.data
+            serializer = VerificationSerializer(data=data)
+
+            if serializer.is_valid():
+                email = serializer.data['email']
+                otp = serializer.data['otp']
+
+                user = MyUser.objects.filter(email=email)
+
+                if not user.exists():
+                    return Response({
+                        'message': 'იმეილი არ არსებობს',
+                    },
+                        status=status.HTTP_404_NOT_FOUND)
+
+                if user[0].is_email_confirmed:
+                    return Response(
+                        {'message': 'იმეილი უკვე ვერიფიცირებულია'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+                if user[0].otp != otp:
+                    return Response({
+                        'message': 'არასწორი კოდი',
+                    },
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+                user = user.first()
+                user.is_email_confirmed = True
+                user.save()
+
+                return Response(
+                    {
+                        'message': 'თქვენ წარმატებით გაიარეთ ვერიფიკაცია',
+                        'data': serializer.data
+                    },
+                    status=status.HTTP_201_CREATED
+                )
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response(
+                {'error': 'შეცდომა ვერიფიკაციისას'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

@@ -13,6 +13,10 @@ class ManageListing(APIView):
 
     def post(self, request, *args, **kwargs):
         user = request.user
+        if not user.is_email_confirmed:
+            return Response({
+                'message': 'გაიარეთ იმეილის ვერიფიკაცია'
+            }, status=status.HTTP_403_FORBIDDEN)
         if not user.is_teacher:
             return Response(
                 {'error': 'იმისთვის რომ დადოთ განცხადება, უნდა იყოთ მასწავლებელი'},

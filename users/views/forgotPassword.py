@@ -24,13 +24,10 @@ class CustomResetPasswordRequestToken(ResetPasswordRequestToken):
 
 class SetNewPassword(BaseResetPasswordConfirm):
     def get(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        print(response)
 
-        return render(request, template_name='password_reset_confirm.html')
 
+        return Response('dedistraki')
 
-class GeneratePasswordResetPage:
-    def get(self, request, *args, **kwargs):
-        print(kwargs.get('token_id'))
-
-        return render(request, template_name='password_reset_confirm.html')
 

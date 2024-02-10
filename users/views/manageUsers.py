@@ -21,8 +21,19 @@ class Me(APIView):
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class ManageUsers(APIView):
 
+class check_user(APIView):
+    def post(self, request):
+
+        user = request.data.get('email')
+
+
+        if not MyUser.objects.filter(email=user).exists():
+            return Response(False)
+
+        return Response(True)
+
+class ManageUsers(APIView):
     def get(self, request, pk=None):
         try:
             if pk:

@@ -6,7 +6,7 @@ from listings.views.manageListings import ManageListing
 
 urlpatterns = [
     path('ManageListing', ManageListing.as_view()),
-    path('GetListings', ListingView.as_view()),
+    path('getLast8Listings', ListingView.as_view()),
     path('cities', CityListView.as_view()),
     path('', Filter.as_view()),
 

@@ -155,7 +155,7 @@ AUTH_USER_MODEL = 'users.MyUser'
 BASE_URL = 'http://localhost:8000'
 
 
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 
 

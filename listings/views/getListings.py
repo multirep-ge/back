@@ -10,8 +10,9 @@ from listings.serializers import ListingSerializer
 class ListingView(APIView):
     permission_classes = (permissions.AllowAny,)
 
-    def get(self, request):
+    def post(self, request):
         try:
+            quantity = int(request.data['quantity'])
 
             if not Listing.objects.exists():
                 return Response(
@@ -19,14 +20,15 @@ class ListingView(APIView):
                     status=status.HTTP_404_NOT_FOUND
                 )
 
-            listings = Listing.objects.order_by('-date_created')
+            listings = Listing.objects.order_by('-date_created')[:quantity]
             listings = ListingSerializer(listings, many=True)
 
             return Response(
                 {'data': listings.data},
                 status=status.HTTP_200_OK
             )
-        except:
+        except Exception as e:
+            print(e)
             return Response(
                 {'error': 'შეცდომა ინფორმაციის მიღებისას'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR

@@ -43,6 +43,7 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     is_teacher = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    otp = models.CharField(max_length=6, null=True, blank=True)
     is_email_confirmed = models.BooleanField(default=False)
     objects = MyUserManager()
     USERNAME_FIELD = "email"
