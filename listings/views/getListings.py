@@ -35,6 +35,25 @@ class ListingView(APIView):
             )
 
 
+class ListingDetailView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        try:
+            pk = int(request.data['listing_id'])
+            listing = Listing.objects.get(pk=pk)
+            serializer = ListingSerializer(listing)
+            return Response({'data': serializer.data}, status=status.HTTP_200_OK)
+        except Listing.DoesNotExist:
+            return Response({'error': 'განცხადება ვერ მოიძებნა'}, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            print(e)
+            return Response(
+                {"message": "შეცდომა განცხადების მიღებისას"}
+            )
+
+
 class Filter(APIView):
     permission_classes = (permissions.AllowAny,)
 
@@ -81,4 +100,4 @@ class Filter(APIView):
             'previous': paginator.get_previous_link(),
             'data': paginated_data
         }
-        return Response(data,status.HTTP_200_OK)
+        return Response(data, status.HTTP_200_OK)
