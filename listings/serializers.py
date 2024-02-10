@@ -3,7 +3,6 @@ from rest_framework import serializers
 from listings.models.cities import City
 from listings.models.districts import District
 from listings.models.listings import Listing
-from listings.models.subjects import Subject
 from testuni.settings import BASE_URL
 
 
@@ -27,35 +26,43 @@ class DistrictSerializer(serializers.ModelSerializer):
 
 
 class ListingSerializer(serializers.ModelSerializer):
-    photo = serializers.SerializerMethodField()
-    city = serializers.SerializerMethodField()
-    district = serializers.SerializerMethodField()
-    subject = serializers.SerializerMethodField()
+    _photo = serializers.SerializerMethodField()
+    _city = serializers.SerializerMethodField()
+    _district = serializers.SerializerMethodField()
+    _subject = serializers.SerializerMethodField()
     average_listing_score = serializers.SerializerMethodField()
 
     class Meta:
         model = Listing
         fields = (
-            'id', 'title', 'teacher',
-            'description', 'price', 'city', 'district',
-            'subject', 'photo', 'date_created', 'views', 'average_listing_score'
+            'id', 'title', 'teacher', 'description', 'price',
+            'city', 'district', 'subject', 'photo',
+            '_city', '_district', '_subject','_photo',
+            'date_created', 'views', 'average_listing_score'
         )
 
-    def get_photo(self, obj):
+        extra_kwargs = {
+            'city': {'write_only': True},
+            'district': {'write_only': True},
+            'subject': {'write_only': True},
+            'photo': {'write_only': True}
+        }
+
+    def get__photo(self, obj):
         if obj.photo:
             base_url = BASE_URL
             return f"{base_url}{obj.photo.url}"
         return None
 
-    def get_city(self, obj):
+    def get__city(self, obj):
         if obj.city:
             return obj.city.name
 
-    def get_district(self, obj):
+    def get__district(self, obj):
         if obj.district:
             return obj.district.name
 
-    def get_subject(self, obj):
+    def get__subject(self, obj):
         if obj.subject:
             return obj.subject.name
 

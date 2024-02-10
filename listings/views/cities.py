@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from listings.models.cities import City
-from listings.permissions import IsTeacher
 from listings.serializers import CitySerializer, DistrictSerializer
 
 
