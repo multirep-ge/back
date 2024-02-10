@@ -3,6 +3,7 @@ from rest_framework import serializers
 from listings.models.cities import City
 from listings.models.districts import District
 from listings.models.listings import Listing
+from listings.models.subjects import Subject
 from testuni.settings import BASE_URL
 
 
@@ -27,7 +28,11 @@ class DistrictSerializer(serializers.ModelSerializer):
 
 class ListingSerializer(serializers.ModelSerializer):
     photo = serializers.SerializerMethodField()
+    city = serializers.SerializerMethodField()
+    district = serializers.SerializerMethodField()
+    subject = serializers.SerializerMethodField()
     average_listing_score = serializers.SerializerMethodField()
+
     class Meta:
         model = Listing
         fields = (
@@ -42,7 +47,19 @@ class ListingSerializer(serializers.ModelSerializer):
             return f"{base_url}{obj.photo.url}"
         return None
 
-    def get_average_listing_score(self,obj):
+    def get_city(self, obj):
+        if obj.city:
+            return obj.city.name
+
+    def get_district(self, obj):
+        if obj.district:
+            return obj.district.name
+
+    def get_subject(self, obj):
+        if obj.subject:
+            return obj.subject.name
+
+    def get_average_listing_score(self, obj):
         if obj.average_listing_score:
             return round(obj.average_listing_score, 2)
         return None

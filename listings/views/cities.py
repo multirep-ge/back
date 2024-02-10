@@ -1,4 +1,4 @@
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -8,7 +8,7 @@ from listings.serializers import CitySerializer, DistrictSerializer
 
 
 class CityListView(APIView):
-    permission_classes = [IsTeacher]
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request):
         try:
@@ -30,7 +30,7 @@ class CityListView(APIView):
 
 
 class CityView(APIView):
-    permission_classes = [IsTeacher]
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request, city_id):
         try:
