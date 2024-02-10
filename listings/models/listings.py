@@ -13,6 +13,7 @@ class Listing(models.Model):
     photo = models.ImageField(null=True, upload_to="images/listing")
     views = models.PositiveIntegerField(default=0)
     date_created = models.DateTimeField(default=now)
+    currency = models.ForeignKey('listings.Currency', on_delete=models.CASCADE, null=True, blank=True)
     city = models.ForeignKey('listings.City', on_delete=models.CASCADE, null=True)
     district = models.ForeignKey('listings.District', on_delete=models.CASCADE, null=True, blank=True)
 
