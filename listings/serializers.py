@@ -50,8 +50,7 @@ class ListingSerializer(serializers.ModelSerializer):
 
     def get__photo(self, obj):
         if obj.photo:
-            base_url = BASE_URL
-            return f"{base_url}{obj.photo.url}"
+            return self.context.get('request').build_absolute_uri(obj.photo.url)
         return None
 
     def get__city(self, obj):

@@ -22,7 +22,7 @@ class RegistrationView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        serializer = RegistrationSerializer(data=request.data)
+        serializer = RegistrationSerializer(data=request.data, context={'request': request})
 
         if serializer.is_valid():
             serializer.save()
