@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from listings.models.listings import Listing
-from listings.serializers import ListingSerializer
+from listings.serializers import ListingSerializer, ListingWithTeacherSerializer
 
 
 class ListingView(APIView):
@@ -98,7 +98,7 @@ class Filter(APIView):
             if district:
                 queryset = queryset.filter(district=district)
 
-        data = ListingSerializer(queryset, many=True,context={'request':request}).data
+        data = ListingWithTeacherSerializer(queryset, many=True,context={'request':request}).data
         if sort_by:
             data = list(sorted(data, key=lambda x: x[sort_by]))
         paginator = PageNumberPagination()

@@ -4,6 +4,7 @@ from listings.models.cities import City
 from listings.models.districts import District
 from listings.models.listings import Listing
 from testuni.settings import BASE_URL
+from users.serializers import ProfileSerializer
 
 
 class CitySerializer(serializers.ModelSerializer):
@@ -37,7 +38,7 @@ class ListingSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'title', 'teacher', 'description', 'price',
             'city', 'district', 'subject', 'photo',
-            '_city', '_district', '_subject','_photo',
+            '_city', '_district', '_subject', '_photo',
             'date_created', 'views', 'average_listing_score'
         )
 
@@ -96,8 +97,6 @@ class ListingSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = self.context['request'].user
-
-        # Check if the user has the 'teacher' attribute
         if hasattr(user, 'teacher'):
             teacher = user.teacher
             validated_data['teacher'] = teacher
@@ -105,6 +104,26 @@ class ListingSerializer(serializers.ModelSerializer):
             return listing
         else:
             raise serializers.ValidationError({'error': 'User does not have a teacher attribute'})
+
+
+class ListingWithTeacherSerializer(ListingSerializer):
+    class Meta(ListingSerializer.Meta):
+        fields = ListingSerializer.Meta.fields + ('teacher',)
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        teacher_instance = instance.teacher
+        if teacher_instance:
+            user_instance = teacher_instance.user
+            profile_serializer = ProfileSerializer(user_instance, context=self.context)
+            representation['teacher'] = {
+                'name': profile_serializer.data['first_name'],
+                'phone': profile_serializer.data['phone'],
+                'profile_pic': profile_serializer.data['profile_pic']
+            }
+        else:
+            representation['teacher'] = None
+        return representation
 
 
 class EditListingSerializer(serializers.ModelSerializer):

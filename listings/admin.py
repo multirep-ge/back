@@ -16,7 +16,7 @@ class DistrictAdmin(admin.ModelAdmin):
 
 
 class ListingAdmin(admin.ModelAdmin):
-    list_display = ['teacher', 'title', 'average_listing_score']
+    list_display = ['teacher', 'title', 'average_listing_score','_score']
 
 
 admin.site.register(Currency)
