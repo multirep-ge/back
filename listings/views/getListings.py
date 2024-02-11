@@ -12,7 +12,12 @@ class ListingView(APIView):
 
     def post(self, request):
         try:
-            quantity = int(request.data['quantity'])
+
+
+
+            quantity = request.data['quantity']
+
+
 
             if not Listing.objects.exists():
                 return Response(
@@ -20,8 +25,12 @@ class ListingView(APIView):
                     status=status.HTTP_404_NOT_FOUND
                 )
 
-            listings = Listing.objects.order_by('-date_created')[:quantity]
+            if quantity is int:
+                listings = Listing.objects.order_by('-date_created')[:quantity]
+            else:
+                listings = Listing.objects.order_by('-date_created')
             listings = ListingSerializer(listings, many=True, context={'request': request})
+
 
             return Response(
                 {'data': listings.data},
@@ -42,7 +51,7 @@ class ListingDetailView(APIView):
         try:
             pk = int(request.data['listing_id'])
             listing = Listing.objects.get(pk=pk)
-            serializer = ListingSerializer(listing)
+            serializer = ListingSerializer(listing, many=False, context={'request': request})
             return Response({'data': serializer.data}, status=status.HTTP_200_OK)
         except Listing.DoesNotExist:
             return Response({'error': 'განცხადება ვერ მოიძებნა'}, status=status.HTTP_404_NOT_FOUND)
@@ -50,7 +59,8 @@ class ListingDetailView(APIView):
         except Exception as e:
             print(e)
             return Response(
-                {"message": "შეცდომა განცხადების მიღებისას"}
+                {"message": "შეცდომა განცხადების მიღებისას"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
 

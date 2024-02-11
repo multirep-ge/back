@@ -6,7 +6,7 @@ from scores.models import Score
 
 class Listing(models.Model):
     teacher = models.ForeignKey('users.Teacher', on_delete=models.CASCADE, null=True)
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=50)
     description = models.TextField(blank=True, null=True)
     price = models.IntegerField()
     subject = models.ForeignKey('listings.Subject', on_delete=models.CASCADE)

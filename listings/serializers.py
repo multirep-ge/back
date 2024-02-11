@@ -114,6 +114,7 @@ class EditListingSerializer(serializers.ModelSerializer):
         partial = True
 
     def to_representation(self, instance):
+
         representation = super().to_representation(instance)
         if 'city' in representation and representation['city'] is None:
             representation.pop('city')
