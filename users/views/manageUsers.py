@@ -90,7 +90,7 @@ class ManageUsers(APIView):
 class TopTenTeacher(APIView):
     def get(self, request):
         try:
-            data = MyUser.objects.filter(is_teacher=True)
+            data = list(map(lambda x: x.user, Teacher.objects.all()))
             serializer = ProfileSerializer(data, many=True, context={'request': request})
 
             top_ten = sorted(serializer.data, key=lambda x: x['average_teacher_score'], reverse=True)[:10]
@@ -110,7 +110,7 @@ class DataForSpecificTeacher(APIView):
             listing_serializer = ListingSerializer(listing, many=False, context={'request': request})
             _id = listing_serializer.data['teacher']
             user = MyUser.objects.get(is_teacher=True, id=_id)
-            serializer = ProfileSerializer(user, many=False, context={'request':request})
+            serializer = ProfileSerializer(user, many=False, context={'request': request})
             return Response({'data': serializer.data}, status=status.HTTP_200_OK)
         except Listing.DoesNotExist:
             return Response({'error': "Listing not found"}, status=status.HTTP_404_NOT_FOUND)
