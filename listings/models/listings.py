@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils.timezone import now
 
-from scores.models import Score
 
 
 class Listing(models.Model):
@@ -17,15 +16,17 @@ class Listing(models.Model):
     city = models.ForeignKey('listings.City', on_delete=models.CASCADE, null=True)
     district = models.ForeignKey('listings.District', on_delete=models.CASCADE, null=True, blank=True)
 
+    _score = models.DecimalField(default=0.0, decimal_places=2, max_digits=3)
+
     @property
     def average_listing_score(self):
-        scores = Score.objects.filter(listing=self)
-        if scores.exists():
-            total_score = sum(score.score for score in scores)
-            count = scores.count()
-            return total_score / count
-        else:
-            return 0
-
+        # scores = Score.objects.filter(listing=self)
+        # if scores.exists():
+        #     total_score = sum(score.score for score in scores)
+        #     count = scores.count()
+        #     return total_score / count
+        # else:
+        #     return 0
+        return 0
     def __str__(self):
         return self.title

@@ -1,7 +1,6 @@
 from uuid import uuid4
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
-from django.utils.timezone import now
 
 from listings.models.listings import Listing
 
@@ -63,6 +62,8 @@ class Teacher(models.Model):
     cv = models.FileField(upload_to='files/', null=True, blank=True)
     phone = models.IntegerField(default=500000000)
     user = models.OneToOneField(MyUser, on_delete=models.CASCADE, primary_key=True)
+
+    _score = models.DecimalField(default=0.0, decimal_places=2, max_digits=3)
 
     @property
     def average_teacher_score(self):

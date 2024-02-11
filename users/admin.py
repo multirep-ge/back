@@ -36,8 +36,7 @@ class TeacherAdmin(admin.ModelAdmin):
     def email(self, obj):
         return obj.user.email
 
-    list_display = ['email', 'average_teacher_score']
-
+    list_display = ['email', 'average_teacher_score', '_score']
 
 
 admin.site.register(MyUser, MyUserAdmin)

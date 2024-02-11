@@ -13,5 +13,5 @@ urlpatterns = [
     path('get_specific_listing', ListingDetailView.as_view()),
 
     path('cities/<int:city_id>', CityView.as_view()),
-    path('<int:pk>',Filter.as_view() )
+    path('<int:pk>', Filter.as_view())
 ]
