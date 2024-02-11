@@ -13,11 +13,7 @@ class ListingView(APIView):
     def post(self, request):
         try:
 
-
-
             quantity = request.data['quantity']
-
-
 
             if not Listing.objects.exists():
                 return Response(
@@ -30,7 +26,6 @@ class ListingView(APIView):
             else:
                 listings = Listing.objects.order_by('-date_created')
             listings = ListingSerializer(listings, many=True, context={'request': request})
-
 
             return Response(
                 {'data': listings.data},
@@ -75,30 +70,32 @@ class Filter(APIView):
                 data.save()
             except:
                 return Response({'error': 'განცხადება ვერ მოიძებნა'}, status.HTTP_404_NOT_FOUND)
-            serializer = ListingSerializer(data,context={'request':request})
+            serializer = ListingSerializer(data, context={'request': request})
             return Response({'data': serializer.data}, status=status.HTTP_200_OK)
 
         subject = self.request.query_params.get("subject")
-        min_price = self.request.query_params.get("minPrice")
-        max_price = self.request.query_params.get("maxPrice")
         city = self.request.query_params.get("city")
         district = self.request.query_params.get("district")
         sort_by = self.request.query_params.get("sortBy")
-
+        min_price = self.request.query_params.get("minPrice")
+        max_price = self.request.query_params.get("maxPrice")
         queryset = Listing.objects.all()
-
         if subject:
-            queryset = queryset.filter(subject=subject)
-
-        if min_price and max_price:
-            queryset = queryset.filter(price__range=(min_price, max_price))
+            queryset = queryset.filter(subject__name=subject)
 
         if city:
-            queryset = queryset.filter(city=city)
+            queryset = queryset.filter(city__name=city)
             if district:
-                queryset = queryset.filter(district=district)
+                queryset = queryset.filter(district__name=district)
 
-        data = ListingSerializer(queryset, many=True,context={'request':request}).data
+        if min_price:
+            queryset = queryset.filter(price__gte=min_price)
+
+        if max_price:
+            queryset = queryset.filter(price__lte=max_price)
+
+        data = ListingSerializer(queryset, many=True, context={'request': request}).data
+
         if sort_by:
             data = list(sorted(data, key=lambda x: x[sort_by]))
         paginator = PageNumberPagination()
