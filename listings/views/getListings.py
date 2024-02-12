@@ -12,26 +12,17 @@ class ListingView(APIView):
 
     def post(self, request):
         try:
-
-
-
             quantity = request.data['quantity']
-
-
-
             if not Listing.objects.exists():
                 return Response(
                     {'error': 'განცხადებები ვერ მოიძებნა'},
                     status=status.HTTP_404_NOT_FOUND
                 )
-
             if quantity is int:
                 listings = Listing.objects.order_by('-date_created')[:quantity]
             else:
                 listings = Listing.objects.order_by('-date_created')
             listings = ListingSerializer(listings, many=True, context={'request': request})
-
-
             return Response(
                 {'data': listings.data},
                 status=status.HTTP_200_OK
@@ -46,7 +37,6 @@ class ListingView(APIView):
 
 class ListingDetailView(APIView):
     permission_classes = (permissions.AllowAny,)
-
     def post(self, request):
         try:
             pk = int(request.data['listing_id'])
@@ -66,7 +56,6 @@ class ListingDetailView(APIView):
 
 class Filter(APIView):
     permission_classes = (permissions.AllowAny,)
-
     def get(self, request, pk=None):
         if pk:
             try:
@@ -81,22 +70,30 @@ class Filter(APIView):
         subject = self.request.query_params.get("subject")
         min_price = self.request.query_params.get("minPrice")
         max_price = self.request.query_params.get("maxPrice")
+        teacher_id = self.request.query_params.get("teacher_id")
+
         city = self.request.query_params.get("city")
         district = self.request.query_params.get("district")
         sort_by = self.request.query_params.get("sortBy")
 
         queryset = Listing.objects.all()
 
+        if teacher_id:
+            queryset = queryset.filter(teacher__id=teacher_id)
+
         if subject:
-            queryset = queryset.filter(subject=subject)
+            queryset = queryset.filter(subject__name=subject)
 
         if min_price and max_price:
-            queryset = queryset.filter(price__range=(min_price, max_price))
+            queryset = queryset.filter(price__gte=min_price)
+
+        if max_price:
+            queryset = queryset.filter(price__lte=max_price)
 
         if city:
-            queryset = queryset.filter(city=city)
+            queryset = queryset.filter(city__name=city)
             if district:
-                queryset = queryset.filter(district=district)
+                queryset = queryset.filter(district__name=district)
 
         data = ListingWithTeacherSerializer(queryset, many=True,context={'request':request}).data
         if sort_by:
