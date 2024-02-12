@@ -1,12 +1,11 @@
 from django.urls import path
 
 from listings.views.cities import CityListView, CityView
-from listings.views.getListings import ListingView, Filter, ListingDetailView
+from listings.views.getListings import Filter, ListingDetailView
 from listings.views.manageListings import ManageListing
 
 urlpatterns = [
     path('ManageListing', ManageListing.as_view()),
-    path('getLast8Listings', ListingView.as_view()),
     path('cities', CityListView.as_view()),
     path('', Filter.as_view()),
 

@@ -31,7 +31,6 @@ class ListingSerializer(serializers.ModelSerializer):
     _city = serializers.SerializerMethodField()
     _district = serializers.SerializerMethodField()
     _subject = serializers.SerializerMethodField()
-    average_listing_score = serializers.SerializerMethodField()
 
     class Meta:
         model = Listing
@@ -39,7 +38,7 @@ class ListingSerializer(serializers.ModelSerializer):
             'id', 'title', 'teacher', 'description', 'price',
             'city', 'district', 'subject', 'photo',
             '_city', '_district', '_subject', '_photo',
-            'date_created', 'views','_score',
+            'date_created', 'views',
         )
 
         extra_kwargs = {
