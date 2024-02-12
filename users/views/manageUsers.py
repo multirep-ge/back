@@ -43,7 +43,7 @@ class ManageUsers(APIView):
                     data = MyUser.objects.get(pk=pk)
                 except:
                     return Response({'error': 'მომხმარებელი ვერ მოიძებნა'}, status.HTTP_404_NOT_FOUND)
-                serializer = ProfileSerializer(data)
+                serializer = ProfileSerializer(data,context={'request': request})
                 return Response({'data': serializer.data}, status=status.HTTP_200_OK)
 
             paginator = PageNumberPagination()
@@ -59,7 +59,8 @@ class ManageUsers(APIView):
                 'data': serializer.data
             }
             return Response(data, status=status.HTTP_200_OK)
-        except:
+        except Exception as e:
+            print(e)
             return Response({'error': 'გაუთვალისწინებელი ხარვეზი'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -93,7 +94,7 @@ class TopTenTeacher(APIView):
             data = list(map(lambda x: x.user, Teacher.objects.all()))
             serializer = ProfileSerializer(data, many=True, context={'request': request})
 
-            top_ten = sorted(serializer.data, key=lambda x: x['average_teacher_score'], reverse=True)[:10]
+            top_ten = sorted(serializer.data, key=lambda x: x['_score'], reverse=True)[:10]
 
             return Response({'data': top_ten}, status=status.HTTP_200_OK)
         except Exception as e:

@@ -18,15 +18,5 @@ class Listing(models.Model):
 
     _score = models.DecimalField(default=0.0, decimal_places=2, max_digits=3)
 
-    @property
-    def average_listing_score(self):
-        # scores = Score.objects.filter(listing=self)
-        # if scores.exists():
-        #     total_score = sum(score.score for score in scores)
-        #     count = scores.count()
-        #     return total_score / count
-        # else:
-        #     return 0
-        return 0
     def __str__(self):
         return self.title

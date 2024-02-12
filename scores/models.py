@@ -11,12 +11,11 @@ class Score(models.Model):
     user = models.ForeignKey('users.MyUser', on_delete=models.CASCADE)
     listing = models.ForeignKey('listings.Listing', on_delete=models.CASCADE)
 
-    class Meta:
-        unique_together = ('listing', 'user')
 
     def update_scores(self):
         update_listing_score(self.listing)
         update_teacher_score(self.listing.teacher)
+
 
     def __str__(self):
         return f"{self.user} -> {self.listing} : {self.score}"

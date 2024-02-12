@@ -39,7 +39,7 @@ class ListingSerializer(serializers.ModelSerializer):
             'id', 'title', 'teacher', 'description', 'price',
             'city', 'district', 'subject', 'photo',
             '_city', '_district', '_subject', '_photo',
-            'date_created', 'views', 'average_listing_score'
+            'date_created', 'views','_score',
         )
 
         extra_kwargs = {
@@ -66,11 +66,6 @@ class ListingSerializer(serializers.ModelSerializer):
         if obj.subject:
             return obj.subject.name
 
-    def get_average_listing_score(self, obj):
-        if obj.average_listing_score:
-            return round(obj.average_listing_score, 2)
-        return None
-
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         if 'city' in representation and representation['city'] is None:
@@ -80,19 +75,16 @@ class ListingSerializer(serializers.ModelSerializer):
         return representation
 
     def validate(self, data):
-
         price = data.get('price')
         errors = []
         district = data.get('district')
         city = data.get('city')
         if district is not None and city is not None and district.city != city:
             raise serializers.ValidationError({'error': 'District does not belong to the specified city'})
-
         if price < 0:
             errors.append('ფასი უნდა იყოს დადებითი რიცხვი')
         if len(errors) > 0:
             raise serializers.ValidationError({'errors': errors})
-
         return data
 
     def create(self, validated_data):
@@ -133,7 +125,6 @@ class EditListingSerializer(serializers.ModelSerializer):
         partial = True
 
     def to_representation(self, instance):
-
         representation = super().to_representation(instance)
         if 'city' in representation and representation['city'] is None:
             representation.pop('city')

@@ -65,16 +65,6 @@ class Teacher(models.Model):
 
     _score = models.DecimalField(default=0.0, decimal_places=2, max_digits=3)
 
-    @property
-    def average_teacher_score(self):
-        listings = Listing.objects.filter(teacher=self)
-        if listings.exists():
-            total_score = sum(listing.average_listing_score for listing in listings)
-            count = listings.count()
-            return total_score / count
-        else:
-            return 0
-
     def __str__(self):
         return self.user.__str__()
 

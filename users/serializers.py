@@ -1,8 +1,6 @@
 from rest_framework import serializers
 
 from django.contrib.auth import get_user_model
-
-from testuni.settings import BASE_URL
 from users.models import Teacher, MyUser
 
 User = get_user_model()
@@ -27,7 +25,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         }
 
     def to_representation(self, instance):
-        return get_profile(instance,context=self.context)
+        return get_profile(instance, context=self.context)
 
     def validate(self, data):
         password = data.get('password')
@@ -78,7 +76,7 @@ class TeacherSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teacher
         partial = True
-        fields = ['profile_pic', 'bio', 'cv', 'phone', 'average_teacher_score']
+        fields = ['profile_pic', 'bio', 'cv', 'phone', '_score']
 
     def get_profile_pic(self, obj):
         if obj.profile_pic:
@@ -91,14 +89,14 @@ class ProfileSerializer(serializers.ModelSerializer):
     bio = serializers.CharField(required=False, )
     cv = serializers.FileField(required=False)
     phone = serializers.IntegerField()
-    average_teacher_score = serializers.DecimalField(read_only=True, max_digits=3, decimal_places=2)
+    _score = serializers.DecimalField(read_only=True, max_digits=3, decimal_places=2)
 
     class Meta:
         model = MyUser
         partial = True
         fields = ['id', 'email', 'first_name', 'last_name',
                   'profile_pic', 'is_teacher',
-                  'bio', 'cv', 'phone', 'average_teacher_score'
+                  'bio', 'cv', 'phone', '_score'
                   ]
 
         extra_kwargs = {
@@ -106,13 +104,14 @@ class ProfileSerializer(serializers.ModelSerializer):
         }
 
     def to_representation(self, instance):
-        return get_profile(instance,context=self.context)
+        return get_profile(instance, context=self.context)
 
     def update(self, instance, validated_data):
         super().update(instance, validated_data)
-        teacher = Teacher.objects.get(user=instance)
-        t_serializer = TeacherSerializer()
-        t_serializer.update(teacher, validated_data)
+        if instance["is_teacher"]:
+            teacher = Teacher.objects.get(user=instance)
+            t_serializer = TeacherSerializer()
+            t_serializer.update(teacher, validated_data)
         return instance
 
 
