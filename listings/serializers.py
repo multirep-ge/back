@@ -3,6 +3,7 @@ from rest_framework import serializers
 from listings.models.cities import City
 from listings.models.districts import District
 from listings.models.listings import Listing
+from listings.models.subjects import Subject
 from testuni.settings import BASE_URL
 from users.serializers import ProfileSerializer
 
@@ -146,3 +147,10 @@ class EditListingSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'errors': errors})
 
         return data
+
+
+class SubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subject
+        fields = ['id', 'name']
+

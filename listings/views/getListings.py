@@ -1,4 +1,3 @@
-from django.db.models import Q
 from rest_framework import permissions, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
@@ -7,6 +6,32 @@ from rest_framework.views import APIView
 from listings.models.listings import Listing
 from listings.serializers import ListingSerializer, ListingWithTeacherSerializer
 
+class ListingView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        try:
+
+
+            if not Listing.objects.exists():
+                return Response(
+                    {'error': 'განცხადებები ვერ მოიძებნა'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            listings = Listing.objects.order_by('-date_created')[:8]
+
+            listings = ListingSerializer(listings, many=True, context={'request': request})
+
+            return Response(
+                {'data': listings.data},
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            print(e)
+            return Response(
+                {'error': 'შეცდომა ინფორმაციის მიღებისას'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 
