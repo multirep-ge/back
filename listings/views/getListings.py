@@ -110,9 +110,10 @@ class Filter(APIView):
         paginator = PageNumberPagination()
         paginator.page_size = 12
         paginated_data = paginator.paginate_queryset(data, request)
+        page_count = ceil(paginator.page.paginator.count / paginator.page_size)
         data = {
             'count': paginator.page.paginator.count,
-            'page_count': ceil(paginator.page.paginator.count/paginator.page_size),
+            'page_count': page_count,
             'next': paginator.get_next_link(),
             'previous': paginator.get_previous_link(),
             'data': paginated_data
