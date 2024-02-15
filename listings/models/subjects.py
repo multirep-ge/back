@@ -7,7 +7,6 @@ georgian_alphabet_validator = RegexValidator(
     code='invalid_georgian_alphabet'
 )
 
-
 class Subject(models.Model):
     name = models.CharField(max_length=100, validators=[georgian_alphabet_validator])
 

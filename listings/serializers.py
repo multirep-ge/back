@@ -3,6 +3,7 @@ from rest_framework import serializers
 from listings.models.cities import City
 from listings.models.districts import District
 from listings.models.listings import Listing
+from listings.models.subjects import Subject
 from testuni.settings import BASE_URL
 from users.serializers import ProfileSerializer
 
@@ -31,7 +32,6 @@ class ListingSerializer(serializers.ModelSerializer):
     _city = serializers.SerializerMethodField()
     _district = serializers.SerializerMethodField()
     _subject = serializers.SerializerMethodField()
-    average_listing_score = serializers.SerializerMethodField()
 
     class Meta:
         model = Listing
@@ -39,7 +39,7 @@ class ListingSerializer(serializers.ModelSerializer):
             'id', 'title', 'teacher', 'description', 'price',
             'city', 'district', 'subject', 'photo',
             '_city', '_district', '_subject', '_photo',
-            'date_created', 'views','_score',
+            'date_created', 'views',
         )
 
         extra_kwargs = {
@@ -147,3 +147,10 @@ class EditListingSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'errors': errors})
 
         return data
+
+
+class SubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subject
+        fields = ['id', 'name']
+
