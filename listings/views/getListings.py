@@ -1,3 +1,5 @@
+from math import ceil
+
 from rest_framework import permissions, status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
@@ -110,6 +112,7 @@ class Filter(APIView):
         paginated_data = paginator.paginate_queryset(data, request)
         data = {
             'count': paginator.page.paginator.count,
+            'page_count': ceil(paginator.page.paginator.count/paginator.page_size),
             'next': paginator.get_next_link(),
             'previous': paginator.get_previous_link(),
             'data': paginated_data
