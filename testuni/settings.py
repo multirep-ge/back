@@ -20,9 +20,6 @@ ALLOWED_HOSTS = ['*']
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://localhost:5173",
-
-    "https://e2a5-213-200-31-8.ngrok-free.app"
-
 ]
 
 # Application definition
@@ -38,12 +35,12 @@ INSTALLED_APPS = [
     'django_cleanup.apps.CleanupConfig',
     'django_email_verification',
     'django_rest_passwordreset',
-    'corsheaders',
+    'rest_framework_simplejwt.token_blacklist',
 
+    'corsheaders',
     'listings',
     'scores',
     'users',
-    'favorites',
 ]
 
 MIDDLEWARE = [

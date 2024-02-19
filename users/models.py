@@ -44,6 +44,23 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     otp = models.CharField(max_length=6, null=True, blank=True)
     is_email_confirmed = models.BooleanField(default=False)
+    favorites = models.ManyToManyField(Listing, related_name='favorited_by', blank=True)
+
+    def add_to_favorites(self, listing):
+        if not self.is_favorite(listing):
+            self.favorites.add(listing)
+            return True  # Indicate that the listing was added
+        return False  # Indicate that the listing was already in favorites
+
+    def remove_from_favorites(self, listing):
+        if self.is_favorite(listing):
+            self.favorites.remove(listing)
+            return True  # Indicate that the listing was removed
+        return False  # Indicate that the listing was not in favorites
+
+    def is_favorite(self, listing):
+        return self.favorites.filter(pk=listing.pk).exists()
+
     objects = MyUserManager()
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ['first_name', 'last_name']

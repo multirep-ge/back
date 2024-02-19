@@ -4,7 +4,6 @@ from listings.models.cities import City
 from listings.models.districts import District
 from listings.models.listings import Listing
 from listings.models.subjects import Subject
-from testuni.settings import BASE_URL
 from users.serializers import ProfileSerializer
 
 
@@ -32,6 +31,8 @@ class ListingSerializer(serializers.ModelSerializer):
     _city = serializers.SerializerMethodField()
     _district = serializers.SerializerMethodField()
     _subject = serializers.SerializerMethodField()
+    _teacher = serializers.SerializerMethodField()
+    _phone = serializers.SerializerMethodField()
 
     class Meta:
         model = Listing
@@ -39,7 +40,7 @@ class ListingSerializer(serializers.ModelSerializer):
             'id', 'title', 'teacher', 'description', 'price',
             'city', 'district', 'subject', 'photo',
             '_city', '_district', '_subject', '_photo',
-            'date_created', 'views',
+            'date_created', 'views', '_teacher', '_phone'
         )
 
         extra_kwargs = {
@@ -57,6 +58,14 @@ class ListingSerializer(serializers.ModelSerializer):
     def get__city(self, obj):
         if obj.city:
             return obj.city.name
+
+    def get__teacher(self, obj):
+        if obj.city:
+            return obj.teacher.user.first_name
+
+    def get__phone(self, obj):
+        if obj.city:
+            return obj.teacher.phone
 
     def get__district(self, obj):
         if obj.district:

@@ -32,7 +32,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
         password2 = data.get('password2')
         email = data.get('email')
         errors = []
-
         if password != password2:
             errors.append('პაროლები არ ემთხვევა')
         if len(password) < 8:
@@ -84,6 +83,8 @@ class TeacherSerializer(serializers.ModelSerializer):
         return None
 
 
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     profile_pic = serializers.ImageField(required=False)
     bio = serializers.CharField(required=False, )
@@ -126,3 +127,4 @@ def get_profile(instance: MyUser, context=None):
 class VerificationSerializer(serializers.Serializer):
     email = serializers.EmailField()
     otp = serializers.CharField()
+

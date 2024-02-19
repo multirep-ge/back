@@ -2,10 +2,11 @@ from django.contrib.auth import authenticate, login, logout
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 from users.models import MyUser
 from users.serializers import RegistrationSerializer, VerificationSerializer
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
 from users.utils import send_confirmation_email
 
@@ -69,14 +70,18 @@ class LoginView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-
 class LogoutView(APIView):
+
     def post(self, request):
-        logout(request)
-        return Response(
-            {'message': 'თქვენ წარმატებით გამოხვედით სისტემიდან'},
-            status=status.HTTP_200_OK
-        )
+        try:
+            refresh_token = request.data["refresh_token"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response(status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class VerifyOTP(APIView):
@@ -126,5 +131,24 @@ class VerifyOTP(APIView):
         except:
             return Response(
                 {'error': 'შეცდომა ვერიფიკაციისას'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+from rest_framework.permissions import IsAuthenticated
+
+
+class CheckTokenView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            return Response(
+                {'is_valid': True},
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                {'is_valid': False},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
