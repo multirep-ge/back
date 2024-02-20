@@ -13,6 +13,7 @@ urlpatterns = [
     path('verify', VerifyOTP.as_view()),
     path('password_reset/', CustomResetPasswordRequestToken.as_view(), name='create_token'),
     path('set_new_password/', SetNewPassword.as_view(), name='create_token'),
+    path('myInfo', Me.as_view()),
 
     path('add_to_favorites', AddToFavoritesView.as_view()),
     path('remove_from_favorites', RemoveFromFavoritesView.as_view()),

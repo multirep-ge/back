@@ -77,7 +77,7 @@ class Teacher(models.Model):
     profile_pic = models.ImageField(upload_to='images/profile', blank=True, null=True)
     bio = models.TextField(null=True, blank=True)
     cv = models.FileField(upload_to='files/', null=True, blank=True)
-    phone = models.IntegerField(default=500000000)
+    phone = models.IntegerField(null=True)
     user = models.OneToOneField(MyUser, on_delete=models.CASCADE, primary_key=True)
 
     _score = models.DecimalField(default=0.0, decimal_places=2, max_digits=3)
