@@ -40,7 +40,7 @@ class ListingSerializer(serializers.ModelSerializer):
             'id', 'title', 'teacher', 'description', 'price',
             'city', 'district', 'subject', 'photo',
             '_city', '_district', '_subject', '_photo',
-            'date_created', 'views', '_teacher', '_phone'
+            'date_created', 'views', '_teacher', '_phone', 'currency', 'time_unit'
         )
 
         extra_kwargs = {

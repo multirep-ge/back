@@ -7,7 +7,6 @@ from rest_framework.views import APIView
 
 from listings.models.listings import Listing
 from listings.serializers import ListingSerializer
-from users import models
 from users.models import MyUser, Teacher
 from users.serializers import ProfileSerializer
 

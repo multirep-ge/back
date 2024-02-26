@@ -22,7 +22,7 @@ class ListingView(APIView):
                 )
             listings = Listing.objects.order_by('-date_created')[:8]
 
-            listings = ListingSerializer(listings, many=True, context={'request': request})
+            listings = ListingWithTeacherSerializer(listings, many=True, context={'request': request})
 
             return Response(
                 {'data': listings.data},
