@@ -83,7 +83,7 @@ class Filter(APIView):
         queryset = Listing.objects.all()
 
         if teacher_id:
-            queryset = queryset.filter(teacher__id=teacher_id)
+            queryset = queryset.filter(teacher=teacher_id)
 
         if subject:
             queryset = queryset.filter(subject__name=subject)
