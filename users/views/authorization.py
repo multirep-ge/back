@@ -23,19 +23,26 @@ class RegistrationView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        serializer = RegistrationSerializer(data=request.data, context={'request': request})
+        try:
+            print(request.data)
+            serializer = RegistrationSerializer(data=request.data, context={'request': request})
 
-        if serializer.is_valid():
-            serializer.save()
-            send_confirmation_email(serializer.data['email'])
-            return Response(
-                {
-                    'message': 'მომხმარებელი წარმატებით დარეგისტრირდა',
-                    'data': serializer.data
-                },
-                status=status.HTTP_201_CREATED
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            if serializer.is_valid():
+                serializer.save()
+                send_confirmation_email(serializer.data['email'])
+                return Response(
+                    {
+                        'message': 'მომხმარებელი წარმატებით დარეგისტრირდა',
+                        'data': serializer.data
+                    },
+                    status=status.HTTP_201_CREATED
+                )
+            print(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return Response({"error": "error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 class LoginView(APIView):
