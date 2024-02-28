@@ -38,7 +38,7 @@ class ListingSerializer(serializers.ModelSerializer):
         model = Listing
         fields = (
             'id', 'title', 'teacher', 'description', 'price',
-            'city', 'district', 'subject', 'photo',
+            'city', 'district', 'subject', 'photo', '_score',
             '_city', '_district', '_subject', '_photo',
             'date_created', 'views', '_teacher', '_phone', 'currency', 'time_unit'
         )
@@ -162,4 +162,3 @@ class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subject
         fields = ['id', 'name']
-

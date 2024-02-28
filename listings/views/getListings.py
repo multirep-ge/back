@@ -79,6 +79,7 @@ class Filter(APIView):
         city = self.request.query_params.get("city")
         district = self.request.query_params.get("district")
         sort_by = self.request.query_params.get("sortBy")
+        sort_order = self.request.query_params.get("order","asc").lower()
 
         queryset = Listing.objects.all()
 
@@ -105,7 +106,8 @@ class Filter(APIView):
         data = ListingWithTeacherSerializer(queryset, many=True, context={'request': request}).data
 
         if sort_by:
-            data = sorted(data, key=lambda x: x.get(sort_by, 0))
+            reverse_sort = sort_order == "desc"
+            data = sorted(data, key=lambda x: x.get(sort_by, 0), reverse=reverse_sort)
 
         paginator = PageNumberPagination()
         paginator.page_size = 12

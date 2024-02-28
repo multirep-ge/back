@@ -6,12 +6,15 @@ from users.models import MyUser
 
 
 class ScoreSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         fields = '__all__'
         model = Score
 
     def create(self, validated_data):
-        user = validated_data.get('user')
+        user = self.context['request'].user
+        validated_data['user'] = user
         listing = validated_data.get('listing')
         existing_score = Score.objects.filter(user=user, listing=listing).first()
         if existing_score:
@@ -21,13 +24,11 @@ class ScoreSerializer(serializers.ModelSerializer):
             return super().create(validated_data)
 
     def validate(self, data):
-        user = data.get('user')
         listing = data.get('listing')
         score = data.get('score')
 
         if score > 5 or score < 1:
             raise serializers.ValidationError('ქულა უნდა იყოს 1 და 5-ს შორის')
-        if (not MyUser.objects.filter(user=user).exists() or
-                not Listing.objects.filter(listing=listing).exists()):
-            raise serializers.ValidationError('განცხადების ან შემფასებლის პარამეტრები არასწორია')
+        if not Listing.objects.filter(id=listing.id).exists():
+            raise serializers.ValidationError('განცხადების პარამეტრები არასწორია')
         return data
