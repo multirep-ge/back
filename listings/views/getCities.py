@@ -11,13 +11,18 @@ class CityDistrictsView(View):
 
         for city in cities:
             city_data = {
+                'city_id': city.id,  # Add city ID to the response
                 'city_name': city.name,
                 'districts': []
             }
 
             districts = city.district_set.all()
             for district in districts:
-                city_data['districts'].append(district.name)
+                district_data = {
+                    'district_id': district.id,  # Add district ID to the response
+                    'district_name': district.name
+                }
+                city_data['districts'].append(district_data)
 
             data.append(city_data)
 
