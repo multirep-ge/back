@@ -24,8 +24,6 @@ urlpatterns = [
     path('check_email/', check_user.as_view()),
 
     path('get_data_for_specific_user/', DataForSpecificTeacher.as_view()),
-
-    path('me', Me.as_view()),
     path('<int:pk>', ManageUsers.as_view(), name='user details'),
     path('', ManageUsers.as_view(), name='user list'),
 

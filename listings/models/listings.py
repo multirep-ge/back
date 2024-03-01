@@ -9,7 +9,9 @@ class Listing(models.Model):
     ]
     TIME_UNIT_CHOICES = [
         ('საათში', 'hour'),
+        ('გაკვეთილში', 'per_lesson'),
         ('თვეში', 'month'),
+
     ]
     teacher = models.ForeignKey('users.Teacher', on_delete=models.CASCADE, null=True)
     title = models.CharField(max_length=30)

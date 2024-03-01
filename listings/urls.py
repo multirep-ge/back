@@ -2,6 +2,7 @@ from django.urls import path
 
 from listings.views.cities import CityListView, CityView
 from listings.views.getCities import CityDistrictsView
+from listings.views.getCurrencies import CurrencyOptionsView, TimeUnitView
 from listings.views.getListings import Filter, ListingDetailView, ListingView
 from listings.views.getSubjects import GetSubjects
 from listings.views.manageListings import ManageListing
@@ -11,6 +12,8 @@ urlpatterns = [
     path('getListingsForMainPage', ListingView.as_view()),
     path('cities', CityListView.as_view()),
     path('', Filter.as_view()),
+    path('currency_options', CurrencyOptionsView.as_view()),
+    path('time_unit_option', TimeUnitView.as_view()),
 
     path('get_cities_with_districts', CityDistrictsView.as_view()),
 
