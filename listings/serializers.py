@@ -123,6 +123,8 @@ class ListingWithTeacherSerializer(ListingSerializer):
             representation['teacher'] = {
                 'name': profile_serializer.data['first_name'],
                 'phone': profile_serializer.data['phone'],
+                'score': profile_serializer.data['_score'],
+
                 'profile_pic': profile_serializer.data['profile_pic']
             }
         else:
